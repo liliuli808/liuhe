@@ -1,0 +1,41 @@
+version: '3'
+services:
+  nginx:
+    image: tofran/nginx-with-substitutions-filter
+    volumes:
+      - "${HTML_PATH}:/workspace/html"
+      - "./etc:/etc/nginx/conf.d"
+      - "./web:/var/www"
+    expose:
+      - 8080
+      - 80
+    ports:
+      - "8080:8080"
+      - "80:80"
+      - "443:443"
+    networks:
+      - mynetwork
+  php:
+    image: breakhack/php7.4
+    container_name: cat
+    restart: always
+    volumes:
+      - "${HTML_PATH}:/workspace/html"
+      - ./etc/conf/php.ini:/usr/local/etc/php/php.ini:ro
+    ports:
+      - 9000
+    networks:
+      - mynetwork
+  db:
+    image: mysql:latest
+    restart: always
+    ports:
+      - "3306:3306" 
+    volumes:
+      - ./data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    networks:
+      - mynetwork
+networks:
+  mynetwork:
